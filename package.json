@@ -1,0 +1,27 @@
+{
+  "name": "v3ts-cesium-2023",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "cesium": "1.104",
+    "element-plus": "^2.4.2",
+    "vue": "^3.2.47",
+    "vue-router": "^4.0.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.1.0",
+    "typescript": "^4.9.3",
+    "vite": "^4.2.0",
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-externals": "^0.6.2",
+    "vite-plugin-insert-html": "^1.0.1",
+    "vite-plugin-static-copy": "^0.13.1",
+    "vue-tsc": "^1.2.0"
+  }
+}
