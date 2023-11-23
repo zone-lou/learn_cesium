@@ -12,6 +12,7 @@
     "cesium": "1.104",
     "element-plus": "^2.4.2",
     "vue": "^3.2.47",
+    "vue-cesium": "^3.2.4",
     "vue-router": "^4.0.13"
   },
   "devDependencies": {

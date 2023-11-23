@@ -6,27 +6,42 @@ let viewer: Cesium.Viewer | null = null
 onMounted(() => {
   //影像层
   Cesium.Ion.defaultAccessToken ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MWFlNDhiYy05Y2I1LTRkYjUtYWJmOS0zNzI0MTU1YmNkYzEiLCJpZCI6MTgwMTM0LCJpYXQiOjE3MDA3MDY2ODd9.XPZK4BJFwtCR4G_gOQSWQzB4HgHMyXIdMkM4JszqRcU'
-  let img_img=new Cesium.WebMapTileServiceImageryProvider({
-    url: "tdt/img_c/wmts?tk=5d75e5a863cff113d19d114e31d1bfb2",
-    layer:'img',
-    style:'default',
-    tileMatrixSetID:'c',
-    format:'tiles',
-    maximumLevel: 18,
+
+  const img_img=new Cesium.WebMapTileServiceImageryProvider({
+    url: "http://{s}.tianditu.gov.cn/img_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
+        "&LAYER=img&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
+        "&style=default&format=tiles&tk=5d75e5a863cff113d19d114e31d1bfb2",
+    layer: "tdtCva",
+    style: "default",
+    format: "tiles",
+    tileMatrixSetID: "c",
+    subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
+    tilingScheme: new Cesium.GeographicTilingScheme(),
+    tileMatrixLabels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"],
+    // maximumLevel: 18,
   });
+
   //注记层
-  let img_cia=new Cesium.WebMapTileServiceImageryProvider({
-    url: "tdt/cva_c/wmts?tk=5d75e5a863cff113d19d114e31d1bfb2",
-    layer:'cva',
-    style:'default',
-    tileMatrixSetID:'c',
-    format:'tiles',
+  const img_cia=new Cesium.WebMapTileServiceImageryProvider({
+    url: "http://{s}.tianditu.gov.cn/cia_c/wmts?service=wmts&request=GetTile&version=1.0.0" +
+        "&LAYER=cia&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}" +
+        "&style=default&format=tiles&tk=5d75e5a863cff113d19d114e31d1bfb2",
+    layer: "tdtCva",
+    style: "default",
+    format: "tiles",
+    tileMatrixSetID: "c",
+    subdomains: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7"],
+    tilingScheme: new Cesium.GeographicTilingScheme(),
+    tileMatrixLabels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"],
     maximumLevel: 18,
-  });
+
+  })
+
   viewer = new Cesium.Viewer(viewerDivRef.value as HTMLElement)
   let layers=viewer.scene.imageryLayers;
-  layers.addImageryProvider(img_img);
   layers.addImageryProvider(img_cia);
+  // layers.addImageryProvider(img_img);
+
 })
 </script>
 <template>
