@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
 
 // 1. 配置路由
-const routes: Array<RouteRecordRaw> = [
+const routes= [
     {
         path: "/", // 默认路由 home页面
         component: () => import("../components/map/ArcGis.vue"),
@@ -10,6 +10,10 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: "/tianditu", // 默认路由 home页面
         component: () => import("../components/map/tianditu.vue"),
+    },
+    {
+        path: "/bing", // 默认路由 home页面
+        component: () => import("../components/map/Bing.vue"),
     },
 
 ];
