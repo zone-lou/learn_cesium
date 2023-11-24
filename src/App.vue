@@ -20,19 +20,13 @@ const options = [
     value: 'camera',
     label: '相机',
   },
+  {
+    value: 'draw',
+    label: '绘图',
+  },
 ]
 </script>
-
 <template>
-<!--  <el-select v-model="value" placeholder="Select" @change="selectChange">-->
-<!--    <el-option-->
-<!--        v-for="item in options"-->
-<!--        :key="item.value"-->
-<!--        :label="item.label"-->
-<!--        :value="item.value"-->
-<!--        :disabled="item.disabled"-->
-<!--    />-->
-<!--  </el-select>-->
   <router-link :to="'/'+item.value" v-for="item in options">{{item.label}}</router-link>
   <router-view></router-view>
 </template>

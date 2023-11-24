@@ -19,6 +19,10 @@ const routes= [
         path: "/camera", // 默认路由 home页面
         component: () => import("../components/scene/Camera.vue"),
     },
+    {
+        path: "/draw", // 默认路由 home页面
+        component: () => import("../components/draw/Draw.vue"),
+    },
 
 ];
 

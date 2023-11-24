@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import * as Cesium from "cesium";
 import {onMounted, ref} from "vue";
+import CesiumEntityDraw from "../../utils/CesiumEntityDraw"
 const viewerDivRef = ref<HTMLDivElement>()
 let viewer: Cesium.Viewer | null = null
 const selectValue = ref('')
@@ -32,6 +33,10 @@ const options = [
   {
     value: 'losAngelesToTokyo',
     label: 'losAngelesToTokyo',
+  },
+  {
+    value: 'draw',
+    label: 'draw',
   }
 
 ]
@@ -59,8 +64,14 @@ const selectChange=(value)=>{
       return flyInACity();
     case 'losAngelesToTokyo':
       return losAngelesToTokyo();
+    case 'draw':
+      return draw();
 
   }
+}
+const draw=()=>{
+  const drawEntities = new CesiumEntityDraw(viewer!, {});
+  drawEntities.startDraw('rectangle');
 }
 const setViewer=()=>{
   //设置相机位置
