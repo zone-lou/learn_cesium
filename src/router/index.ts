@@ -15,6 +15,10 @@ const routes= [
         path: "/bing", // 默认路由 home页面
         component: () => import("../components/map/Bing.vue"),
     },
+    {
+        path: "/camera", // 默认路由 home页面
+        component: () => import("../components/scene/Camera.vue"),
+    },
 
 ];
 

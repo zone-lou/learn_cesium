@@ -7,14 +7,24 @@ onMounted(() => {
   //影像层
   Cesium.Ion.defaultAccessToken ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MWFlNDhiYy05Y2I1LTRkYjUtYWJmOS0zNzI0MTU1YmNkYzEiLCJpZCI6MTgwMTM0LCJpYXQiOjE3MDA3MDY2ODd9.XPZK4BJFwtCR4G_gOQSWQzB4HgHMyXIdMkM4JszqRcU'
   viewer = new Cesium.Viewer(viewerDivRef.value as HTMLElement, {
-    animation: false,  //是否显示动画控件
-    baseLayerPicker: false, //是否显示图层选择控件
-    geocoder: false, //是否显示地名查找控件
-    timeline: false, //是否显示时间线控件
-    sceneModePicker: false, //是否显示投影方式控件
-    navigationHelpButton: false, //是否显示帮助信息控件
-    infoBox: true,  //是否显示点击要素之后显示的信息
-    homeButton:false
+    geocoder: false, // 地名查找,默认true
+    homeButton: false, // 主页按钮，默认true
+    sceneModePicker: false, //二三维切换按钮
+    baseLayerPicker: false, // 地图切换控件(底图以及地形图)是否显示,默认显示true
+    navigationHelpButton: false, // 问号图标，导航帮助按钮，显示默认的地图控制帮助
+    animation: false, // 动画控制，默认true .
+    shouldAnimate: false, // 是否显示动画控制，默认true .
+    shadows: true, // 阴影
+    timeline: false, // 时间轴,默认true .
+    CreditsDisplay: false, // 展示数据版权属性
+    fullscreenButton: false, // 全屏按钮,默认显示true
+    infoBox: true, // 点击要素之后显示的信息,默认true
+    selectionIndicator: true, // 选中元素显示,默认true
+    contextOptions: {
+      webgl: {
+        preserveDrawingBuffer: true //cesium状态下允许canvas转图片convertToImage
+      }
+    }
   })
   viewer._cesiumWidget._creditContainer.style.display = "none";  //去除左下角logo
   let  layers= viewer.scene.imageryLayers;

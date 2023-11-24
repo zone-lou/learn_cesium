@@ -16,6 +16,10 @@ const options = [
     value: 'bing',
     label: 'Bing地图',
   },
+  {
+    value: 'camera',
+    label: '相机',
+  },
 ]
 </script>
 
