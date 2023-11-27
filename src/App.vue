@@ -44,6 +44,10 @@ const options = [
     value: 'model',
     label: '模型',
   },
+  {
+    value: 'kml',
+    label: 'kml数据',
+  },
 ]
 </script>
 <template>

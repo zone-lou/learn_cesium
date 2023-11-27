@@ -43,6 +43,10 @@ const routes= [
         path: "/model", // 默认路由 home页面
         component: () => import("../components/entity/Model.vue"),
     },
+    {
+        path: "/kml", // 默认路由 home页面
+        component: () => import("../components/dataSources/Kml.vue"),
+    },
 
 
 ];
