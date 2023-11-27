@@ -48,6 +48,10 @@ const options = [
     value: 'kml',
     label: 'kml数据',
   },
+  {
+    value: 'drawTest',
+    label: '测试用',
+  },
 ]
 </script>
 <template>

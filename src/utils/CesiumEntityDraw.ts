@@ -116,7 +116,7 @@ class CesiumEntityDraw {
         // 设置鼠标样式为crosshair
         document.body.style.cursor = 'crosshair';
         const positions: any = [];
-        let rectangle = null;
+        let rectangle :any = null;
         const canvas = this.viewer.scene.canvas;
         this.handler = new Cesium.ScreenSpaceEventHandler(canvas);
         this.handler.setInputAction((click: { position: any }) => {

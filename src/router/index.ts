@@ -47,6 +47,10 @@ const routes= [
         path: "/kml", // 默认路由 home页面
         component: () => import("../components/dataSources/Kml.vue"),
     },
+    {
+        path: "/drawTest", // 默认路由 home页面
+        component: () => import("../components/draw/DrawTest.vue"),
+    },
 
 
 ];
