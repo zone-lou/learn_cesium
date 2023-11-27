@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import * as Cesium from "cesium";
+window.Cesium = Cesium;
 import {onMounted, ref} from "vue";
 import CesiumEntityDraw from "../../utils/CesiumEntityDraw"
+// import cesiumDraw from 'cesium-draw'
+// import 'cesium-draw/dist/theme/default.css'
 const viewerDivRef = ref<HTMLDivElement>()
-let viewer: Cesium.Viewer | null = null
+let drawManager = ref(null);
+let viewer= null
 const selectValue = ref('')
 const options = [
   {
@@ -12,7 +16,7 @@ const options = [
   },
   {
     value: 'line',
-    label: '先',
+    label: '线',
   },
   {
     value: 'rectangle',
@@ -27,6 +31,7 @@ onMounted(() => {
   //影像层
   Cesium.Ion.defaultAccessToken ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MWFlNDhiYy05Y2I1LTRkYjUtYWJmOS0zNzI0MTU1YmNkYzEiLCJpZCI6MTgwMTM0LCJpYXQiOjE3MDA3MDY2ODd9.XPZK4BJFwtCR4G_gOQSWQzB4HgHMyXIdMkM4JszqRcU'
   viewer = new Cesium.Viewer(viewerDivRef.value as HTMLElement)
+  // drawManager.value?.init(viewer)
 })
 const buttonClick=(value)=>{
   const drawEntities = new CesiumEntityDraw(viewer!, {});
@@ -36,6 +41,7 @@ const buttonClick=(value)=>{
 <template>
   <el-button round v-for="item in options" @click="buttonClick(item.value)">{{item.label}}</el-button>
   <div id="cesium-viewer" ref="viewerDivRef"></div>
+<!--  <cesium-draw ref='drawManager' :viewer="viewer"></cesium-draw>-->
 </template>
 
 <style scoped>

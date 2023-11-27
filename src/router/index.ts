@@ -20,9 +20,30 @@ const routes= [
         component: () => import("../components/scene/Camera.vue"),
     },
     {
+        path: "/point", // 默认路由 home页面
+        component: () => import("../components/entity/Point.vue"),
+    },
+    {
+        path: "/plane", // 默认路由 home页面
+        component: () => import("../components/entity/Plane.vue"),
+    },
+    {
+        path: "/polygon", // 默认路由 home页面
+        component: () => import("../components/entity/Polygon.vue"),
+    },
+    {
+        path: "/polyline", // 默认路由 home页面
+        component: () => import("../components/entity/Polyline.vue"),
+    },
+    {
         path: "/draw", // 默认路由 home页面
         component: () => import("../components/draw/Draw.vue"),
     },
+    {
+        path: "/model", // 默认路由 home页面
+        component: () => import("../components/entity/Model.vue"),
+    },
+
 
 ];
 

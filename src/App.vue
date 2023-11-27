@@ -21,13 +21,33 @@ const options = [
     label: '相机',
   },
   {
+    value: 'point',
+    label: '点',
+  },
+  {
+    value: 'polyline',
+    label: '线',
+  },
+  {
+    value: 'plane',
+    label: '面',
+  },
+  {
+    value: 'polygon',
+    label: '多边形',
+  },
+  {
     value: 'draw',
     label: '绘图',
+  },
+  {
+    value: 'model',
+    label: '模型',
   },
 ]
 </script>
 <template>
-  <router-link :to="'/'+item.value" v-for="item in options">{{item.label}}</router-link>
+  <router-link :to="'/'+item.value" v-for="item in options" style="margin-right: 10px">{{item.label}}</router-link>
   <router-view></router-view>
 </template>
 
