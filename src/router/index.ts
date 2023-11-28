@@ -35,10 +35,7 @@ const routes= [
         path: "/polyline", // 默认路由 home页面
         component: () => import("../components/entity/Polyline.vue"),
     },
-    {
-        path: "/draw", // 默认路由 home页面
-        component: () => import("../components/draw/Draw.vue"),
-    },
+
     {
         path: "/model", // 默认路由 home页面
         component: () => import("../components/entity/Model.vue"),
@@ -48,8 +45,8 @@ const routes= [
         component: () => import("../components/dataSources/Kml.vue"),
     },
     {
-        path: "/drawTest", // 默认路由 home页面
-        component: () => import("../components/draw/DrawTest.vue"),
+        path: "/drawTool", // 默认路由 home页面
+        component: () => import("../components/tool/DrawTool.vue"),
     },
 
 

@@ -37,10 +37,6 @@ const options = [
     label: '多边形',
   },
   {
-    value: 'draw',
-    label: '绘图',
-  },
-  {
     value: 'model',
     label: '模型',
   },
@@ -49,8 +45,8 @@ const options = [
     label: 'kml数据',
   },
   {
-    value: 'drawTest',
-    label: '测试用',
+    value: 'drawTool',
+    label: '绘图工具',
   },
 ]
 </script>
