@@ -16,6 +16,8 @@ class CreatePolyline extends BasePlot {
         style = style || {};
         this.movePush = false;
         this.type = "polyline";
+        this.wall=undefined;
+        this.labels=[];
         /**
          * @property {Number} [maxPointNum=Number.MAX_VALUE] 线的最大点位数量
         */
@@ -42,13 +44,14 @@ class CreatePolyline extends BasePlot {
             let point = that.createPoint(cartesian);
             point.wz = that.positions.length - 1;
             that.controlPoints.push(point);
-
+            if(that.positions.length>=2){
+                that.createLabel(that.positions.length-1)
+            }
             // 达到最大数量 结束绘制
             if (that.positions.length == that.maxPointNum) {
                 that.endCreate();
                 if (callback) callback(that.entity);
             }
-
         }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
         this.handler.setInputAction(function (evt) { //移动时绘制线
@@ -69,10 +72,11 @@ class CreatePolyline extends BasePlot {
                 that.positions[that.positions.length - 1] = cartesian;
             }
 
-            if (that.positions.length == 2) {
+            if (that.positions.length >= 2) {
                 if (!Cesium.defined(that.entity)) {
                     that.entity = that.createPolyline();
                 }
+                that.getSpaceDistance(that.positions);
             }
         }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
@@ -82,6 +86,8 @@ class CreatePolyline extends BasePlot {
             }
             that.positions.splice(that.positions.length - 2, 1);
             that.viewer.entities.remove(that.controlPoints.pop())
+            that.viewer.entities.remove(that.labels.pop())
+            that.distances.pop()
             if (that.positions.length == 1) {
                 if (that.entity) {
                     that.viewer.entities.remove(that.entity);
@@ -199,7 +205,6 @@ class CreatePolyline extends BasePlot {
 
     createPolyline() {
         let that = this;
-
         let polyline = this.viewer.entities.add({
             polyline: {
                 positions: new Cesium.CallbackProperty(function () {
@@ -213,6 +218,45 @@ class CreatePolyline extends BasePlot {
         });
         polyline.objId = this.objId; // 此处进行和entityObj进行关联
         return polyline;
+    }
+    createWall(height) {
+        this.modelHeight=height
+        let that = this;
+        this.wall = this.viewer.entities.add({
+            wall: {
+                positions: new Cesium.CallbackProperty(function () {
+                    return that.positions
+                }, false),
+                maximumHeights: new Cesium.CallbackProperty(function () {
+                    return new Array(that.positions.length).fill(that.modelHeight)
+                }, false)   ,
+                minimumHeights: new Cesium.CallbackProperty(function () {
+                    return new Array(that.positions.length).fill(0)
+                }, false),
+                material: Cesium.Color.fromCssColorString("rgba(0,255,255,0.3)")
+            }
+        });
+    }
+    createLabel(index){
+        let that = this;
+        let label= this.viewer.entities.add({
+            position: new Cesium.CallbackProperty(function () {
+                return that.positions[index]
+            }, false),
+            label: {
+                text: new Cesium.CallbackProperty(function () {
+                    return that.distances[index-1]+'米'
+                }, false),
+                font: '18px sans-serif',
+                fillColor: Cesium.Color.GOLD,
+                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                outlineWidth: 2,
+                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+                pixelOffset: new Cesium.Cartesian2(20, -20),
+            }
+        });
+        this.labels.push(label)
+
     }
 
     getMaterial(animateType, style) {

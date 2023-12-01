@@ -152,7 +152,6 @@ class CreatePolygon extends BasePlot {
 		this.entity = this.createPolygon();
 		this.polyline = this.createPolyline();
 		this.polyline.show = this.style.outline;
-
 		this.positions = positions;
 		for (let i = 0; i < positions.length; i++) {
 			let newP = positions[i];
@@ -233,7 +232,7 @@ class CreatePolygon extends BasePlot {
 				hierarchy: new Cesium.CallbackProperty(function () {
 					return new Cesium.PolygonHierarchy(that.positions)
 				}, false),
-				heightReference: Number(this.style.heightReference),
+				// heightReference: Number(this.style.heightReference),
 				show: true,
 				fill: this.style.fill == undefined ? true : this.style.fill,
 				material: this.style.color instanceof Cesium.Color ? this.style.color : Cesium.Color.fromCssColorString(this.style.color).withAlpha(this.style.colorAlpha || 1)
@@ -242,7 +241,8 @@ class CreatePolygon extends BasePlot {
 
 		if (!this.style.heightReference) {
 			polygonObj.polygon.height = 0; // 不贴地 必设
-			polygonObj.polygon.perPositionHeight = true; // 启用点的真实高度
+			// polygonObj.polygon.heightReference =HeightReference.NONE
+			polygonObj.polygon.perPositionHeight = false; // 启用点的真实高度
 		}
 		return this.viewer.entities.add(polygonObj);
 	}

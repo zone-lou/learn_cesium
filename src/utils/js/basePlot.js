@@ -1,5 +1,6 @@
 // 所有标绘类的父类
 import util from "../util";
+import Cesium from "cesium";
 /**
  * 标绘基类
  * @description 标绘基类，一般不直接实例化，而实例化其子类（见下方Classes）
@@ -8,8 +9,8 @@ import util from "../util";
  */
 class BasePlot {
     /**
-     * @param {Cesium.Viewer} viewer 地图viewer对象 
-     * @param {Object} style 样式属性 
+     * @param {Cesium.Viewer} viewer 地图viewer对象
+     * @param {Object} style 样式属性
      */
     constructor(viewer, style) {
         this.viewer = viewer;
@@ -35,6 +36,15 @@ class BasePlot {
          */
         this.positions = [];
 
+        /**
+         *@property {int} modelHeight 高度
+         */
+        this.modelHeight = 0;
+
+        /**
+         *@property {int} distance 距离
+         */
+        this.distances=[];
         /**
          *@property {String} state 标识当前状态 no startCreate creating endCreate startEdit endEdit editing
          */
@@ -68,8 +78,8 @@ class BasePlot {
     }
 
     /**
-     * 
-     * @param {Object} px 像素坐标 
+     *
+     * @param {Object} px 像素坐标
      * @returns {Cesium.Cartesian3} 世界坐标
      */
     getCatesian3FromPX(px) {
@@ -96,7 +106,7 @@ class BasePlot {
 
     /**
      *  此方法用于 地图界面缩放问题（transform:translate(2)）
-     * @param {Number} scale 缩放比例 
+     * @param {Number} scale 缩放比例
      */
     setClientScale(scale) {
         scale = scale || 1;
@@ -111,7 +121,7 @@ class BasePlot {
     }
 
     /**
-     * 
+     *
      * @returns {Cesium.Entity} 实体对象
      */
     getEntity() {
@@ -119,7 +129,7 @@ class BasePlot {
     }
 
     /**
-     * 
+     *
      * @param {Boolean} isWgs84 是否转化为经纬度
      * @returns {Array} 坐标数组
      */
@@ -137,7 +147,7 @@ class BasePlot {
 
     /**
      * 设置自定义属性
-     * @param {Object} prop 属性 
+     * @param {Object} prop 属性
      */
     setOwnProp(prop) {
         if (this.entity) this.entity.ownProp = prop;
@@ -156,7 +166,7 @@ class BasePlot {
 
     /**
      * 设置entity对象的显示隐藏
-     * @param {Boolean} visible 
+     * @param {Boolean} visible
      */
     setVisible(visible) {
         if (this.entity) this.entity.show = visible;
@@ -204,7 +214,7 @@ class BasePlot {
     }
 
     /**
-     * 
+     *
      * 开始编辑
      */
     startEdit(callback) {
@@ -217,7 +227,6 @@ class BasePlot {
             if (point) point.show = true;
         }
         this.entity.show = true;
-
         this.modifyHandler.setInputAction(function (evt) {
             if (!that.entity) return;
             let pick = that.viewer.scene.pick(evt.position);
@@ -230,9 +239,20 @@ class BasePlot {
         this.modifyHandler.setInputAction(function (evt) {
             if (that.positions.length < 1 || !that.modifyPoint) return;
             let cartesian = that.getCatesian3FromPX(evt.endPosition, that.viewer, [that.entity, that.modifyPoint]);
+            // if(that.modelHeight){
+            //     let lnglat = Cesium.Cartographic.fromCartesian(cartesian);
+            //     let lat = Cesium.Math.toDegrees(lnglat.latitude);
+            //     let lng = Cesium.Math.toDegrees(lnglat.longitude);
+            //     let hei = lnglat.height;
+            //     console.log(lat,lng,hei,'高度111')
+            //     cartesian=  Cesium.Cartesian3.fromDegrees(lng,lat,hei)
+            // }
             if (cartesian) {
                 that.modifyPoint.position.setValue(cartesian);
                 that.positions[that.modifyPoint.wz] = cartesian;
+                if(that.positions.length>1){
+                    that.getSpaceDistance()
+                }
                 that.state = "editing";
                 if (callback) callback();
             }
@@ -383,7 +403,23 @@ class BasePlot {
         }
     }
 
+    /**
+     * 空间两点距离计算函数
+     */
+    getSpaceDistance() {
+        for (let i = 0; i < this.positions.length - 1; i++) {
+            let point1cartographic = Cesium.Cartographic.fromCartesian(this.positions[i]);
+            let point2cartographic = Cesium.Cartographic.fromCartesian(this.positions[i + 1]);
+            /**根据经纬度计算出距离**/
+            let geodesic = new Cesium.EllipsoidGeodesic();
+            geodesic.setEndPoints(point1cartographic, point2cartographic);
+            let s = geodesic.surfaceDistance;
+            //返回两点之间的距离
+            s = Math.sqrt(Math.pow(s, 2) + Math.pow(point2cartographic.height - point1cartographic.height, 2));
+            this.distances[i]=s
 
+        }
+    }
 }
 
 export default BasePlot;

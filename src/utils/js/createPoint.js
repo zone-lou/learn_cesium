@@ -51,7 +51,6 @@ class CreatePoint extends BasePlot {
 				that.prompt = null;
 			}
 			that.state = "endCreate";
-			console.log(22222)
 			if (callback) callback(that.entity);
 		}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 		this.handler.setInputAction(function (evt) { //单击开始绘制

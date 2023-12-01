@@ -61,6 +61,7 @@ class DrawTool {
     this.endEditFun = null;
     this.removeFun = null;
     this.editingFun = undefined;
+    this.endCreateFun=undefined;
 
     this.deleteEntityObj = null;
 
@@ -155,6 +156,7 @@ class DrawTool {
       // 绘制完成后
       that.nowDrawEntityObj = undefined;
       that.entityObjArr.push(entityObj);
+      if (that.endCreateFun) that.endCreateFun(entityObj, that.entityObjArr);
       if (opt.show == false) entityObj.setVisible(false);
       // 如果可以编辑 则绘制完成打开编辑
       if (that.canEdit && that.fireEdit) {
@@ -167,6 +169,7 @@ class DrawTool {
     });
 
     this.nowDrawEntityObj = entityObj;
+    // return this.entityObjArr;
     return entityObj;
   }
 
@@ -433,6 +436,7 @@ class DrawTool {
     }
     this.entityObjArr = [];
     this.nowEditEntityObj = null;
+
   }
 
   /**
@@ -469,7 +473,7 @@ class DrawTool {
     this.entityObjArr.splice(obj.index, 1);
     // 触发on绑定的移除事件
     if (this.removeFun)
-      this.removeFun(obj.entityObj, obj.entityObj.getEntity());
+      this.removeFun(obj, obj.entityObj.getEntity());
     if (obj.entityObj) {
       obj.entityObj.destroy();
     }
