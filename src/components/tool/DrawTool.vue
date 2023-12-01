@@ -8,9 +8,8 @@
       <el-table-column prop="name" label="名称"  width="180" />
       <el-table-column prop="type" label="类型"  width="180" />
       <el-table-column prop="distance" label="长度" width="200" >
-<!--        <template #default="scope">-->
-<!--          <div>{{distanceSum(scope.row)}}<span>米</span></div>-->
-<!--        </template>-->
+      </el-table-column>
+      <el-table-column prop="area" label="面积" width="200" >
       </el-table-column>
       <el-table-column label="离地高度" width="200" >
         <template #default="scope">
@@ -155,6 +154,7 @@ onMounted(() => {
 
 });
 const endCreate=(entObj:any,ent:any)=>{
+  console.log(entObj,'2222')
   entityObjArr.push({
     id:entObj.attr.id,
     name:entObj.name,
@@ -162,6 +162,7 @@ const endCreate=(entObj:any,ent:any)=>{
     objId:entObj.objId,
     height:0,
     extrudedHeight:0,
+    area:entObj.area,
     distance:entObj.distances.reduce((total:any, num:any) => total + num, 0)
   })
 }
@@ -169,10 +170,15 @@ const remove=(entObj:any,ent:any)=>{
   entityObjArr.splice(entObj.index, 1);
 }
 const editing=(entObj:any,ent:any)=>{
-  // console.log(entObj,'编辑实体')
   entityObjArr.forEach((item)=>{
     if(item.id==entObj.attr.id){
-      item.distance=entObj.distances.reduce((total:any, num:any) => total + num, 0)
+      if(item.type=='polyline'){
+        item.distance=entObj.distances.reduce((total:any, num:any) => total + num, 0)
+      }
+      if(item.type='polygon'){
+        item.area=entObj.area;
+      }
+
     }
   })
 }
@@ -209,16 +215,6 @@ const handleDelete =(index:any,item:any)=>{
 //
 //
 // }
-const distanceSum=(item:any)=>{
-  let obj=plotDrawTool.getEntityObjById(item.id)
-  if(item.type=='polyline'){
-    let distance=0
-    return item.distances.reduce((total:any, num:any) => total + num, 0)
-  }
-  else{
-    return 0
-  }
-}
 const sliderHeightChange=(item:any)=>{
   let obj=plotDrawTool.getEntityObjById(item.id)
   if(item.type=='polygon'){

@@ -292,6 +292,48 @@ class CreatePolyline extends BasePlot {
         }
         return material;
     }
+    /**
+     * 销毁
+     */
+    destroy() {
+        if (this.handler) {
+            this.handler.destroy();
+            this.handler = null;
+        }
+        if (this.modifyHandler) {
+            this.modifyHandler.destroy();
+            this.modifyHandler = null;
+        }
+        if (this.entity) {
+            this.viewer.entities.remove(this.entity);
+            this.entity = null;
+        }
+        if(this.labels&&this.labels.length>0){
+            this.labels.forEach((item)=>{
+                this.viewer.entities.remove(this.entity);
+            })
+        }
+        this.labels=[];
+        this.positions = [];
+        this.modelHeight=0;
+        this.distances=[];
+        this.area=0;
+        for (var i = 0; i < this.controlPoints.length; i++) {
+            var point = this.controlPoints[i];
+            this.viewer.entities.remove(point);
+        }
+        this.controlPoints=null;
+        this.style = null;
+        this.controlPoints = [];
+        this.modifyPoint = null;
+        if (this.prompt) {
+            this.prompt.destroy();
+            this.prompt = null;
+        }
+        this.state = "no";
+        this.forbidDrawWorld(false);
+    }
+
 
 }
 export default CreatePolyline;

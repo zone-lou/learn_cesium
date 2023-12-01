@@ -45,6 +45,17 @@ class BasePlot {
          *@property {int} distance 距离
          */
         this.distances=[];
+
+        /**
+         *@property {int} area 面积
+         */
+        this.area=0;
+
+        /**
+         *@property {Cesium.Cartesian3} centerPoint 圆心
+         */
+        this.centerPoint=null;
+
         /**
          *@property {String} state 标识当前状态 no startCreate creating endCreate startEdit endEdit editing
          */
@@ -196,8 +207,11 @@ class BasePlot {
             this.viewer.entities.remove(this.entity);
             this.entity = null;
         }
-
         this.positions = [];
+        this.modelHeight=0;
+        this.distances=[];
+        this.area=0;
+        this.controlPoints=null;
         this.style = null;
         for (var i = 0; i < this.controlPoints.length; i++) {
             var point = this.controlPoints[i];
@@ -250,8 +264,12 @@ class BasePlot {
             if (cartesian) {
                 that.modifyPoint.position.setValue(cartesian);
                 that.positions[that.modifyPoint.wz] = cartesian;
-                if(that.positions.length>1){
+                if(that.positions.length>1&&that.type=='polyline'){
                     that.getSpaceDistance()
+                }
+                if(that.positions.length>=3&&that.type=='polygon'){
+                    that.getCenterOfGravityPoint()
+                    that.getArea();
                 }
                 that.state = "editing";
                 if (callback) callback();
@@ -417,8 +435,81 @@ class BasePlot {
             //返回两点之间的距离
             s = Math.sqrt(Math.pow(s, 2) + Math.pow(point2cartographic.height - point1cartographic.height, 2));
             this.distances[i]=s
-
         }
+    }
+
+    /**
+     * 计算多边形面积
+     */
+    getArea(points) {
+        let tempArea=0
+        //拆分三角曲面
+        for (let i = 0; i < this.positions.length - 2; i++) {
+            let j = (i + 1) % this.positions.length;
+            let k = (i + 2) % this.positions.length;
+            let totalAngle = this.Angle(this.positions[i], this.positions[j], this.positions[k]);
+            let dis_temp1 = this.distance(this.positions[j], this.positions[0]);
+            let dis_temp2 = this.distance(this.positions[k], this.positions[0]);
+            tempArea += dis_temp1 * dis_temp2 * Math.sin(totalAngle) / 2;
+        }
+        this.area=Math.abs(tempArea).toFixed(4)
+
+    };
+
+    /**
+     * 计算方向
+     */
+    Bearing(from, to) {
+        from = Cesium.Cartographic.fromCartesian(from);
+        to = Cesium.Cartographic.fromCartesian(to);
+        let lat1 = from.latitude;
+        let lon1 = from.longitude;
+        let lat2 = to.latitude;
+        let lon2 = to.longitude;
+        let angle = -Math.atan2(Math.sin(lon1 - lon2) * Math.cos(lat2), Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(lon1 - lon2));
+        if (angle < 0) {
+            angle += Math.PI * 2.0;
+        }
+        let degreesPerRadian = 180.0 / Math.PI; //弧度转化为角度
+        angle = angle * degreesPerRadian; //角度
+        return angle;
+    }
+    /**
+     * 计算角度
+     */
+    Angle(p1, p2, p3) {
+        let bearing21 = this.Bearing(p2, p1);
+        let bearing23 = this.Bearing(p2, p3);
+        let angle = bearing21 - bearing23;
+        if (angle < 0) {
+            angle += 360;
+        }
+        return angle;
+    }
+    /**
+     * 计算2点距离
+     */
+    distance(point1, point2) {
+        let point1cartographic = Cesium.Cartographic.fromCartesian(point1);
+        let point2cartographic = Cesium.Cartographic.fromCartesian(point2);
+        /**根据经纬度计算出距离**/
+        let geodesic = new Cesium.EllipsoidGeodesic();
+        geodesic.setEndPoints(point1cartographic, point2cartographic);
+        let s = geodesic.surfaceDistance;
+        s = Math.sqrt(Math.pow(s, 2) + Math.pow(point2cartographic.height - point1cartographic.height, 2));
+        return s;
+    }
+    /**
+     * 计算多边形的中心（简单的处理）
+     * @param
+     * @returns {*[]}
+     */
+    getCenterOfGravityPoint() {
+        let center = this.positions[0];
+        for (let i = 1; i < this.positions.length; i++) {
+            center = Cesium.Cartesian3.midpoint(center, this.positions[i], new Cesium.Cartesian3());
+        }
+        this.centerPoint=center;
     }
 }
 

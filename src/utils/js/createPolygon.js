@@ -16,6 +16,7 @@ class CreatePolygon extends BasePlot {
 		this.viewer = viewer;
 		this.entity = null;
 		this.polyline = null;
+		this.label=null;
 		let defaultStyle = {
 			outlineColor: "#000000",
 			outlineWidth: 2
@@ -41,6 +42,10 @@ class CreatePolygon extends BasePlot {
 			let point = that.createPoint(cartesian);
 			point.wz = that.positions.length - 1;
 			that.controlPoints.push(point);
+			if(that.positions.length>=3){
+				that.getCenterOfGravityPoint()
+				that.getArea(that.positions);
+			}
 		}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 		this.handler.setInputAction(function (evt) { //移动时绘制面
 			if (that.positions.length < 1) {
@@ -71,6 +76,11 @@ class CreatePolygon extends BasePlot {
 						}
 						that.entity.objId = that.objId;
 					}
+					that.getCenterOfGravityPoint()
+					that.getArea();
+					if(!that.label){
+						that.createLabel();
+					}
 				}
 			}
 		}, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
@@ -84,6 +94,12 @@ class CreatePolygon extends BasePlot {
 					that.viewer.entities.remove(that.entity);
 					that.entity = null;
 					if (that.polyline) that.polyline.show = true;
+				}
+				if(that.label){
+					that.viewer.entities.remove(that.label);
+					that.centerPoint=null;
+					that.label=null;
+					that.area=0;
 				}
 			}
 			if (that.positions.length == 1) {
@@ -260,7 +276,27 @@ class CreatePolygon extends BasePlot {
 			}
 		});
 	}
-
+	// 添加标签
+	createLabel() {
+		let that = this;
+		let labelModel= this.viewer.entities.add({
+			position: new Cesium.CallbackProperty(function () {
+				return that.centerPoint
+			}, false),
+			label: {
+				text: new Cesium.CallbackProperty(function () {
+					return that.area+'平方米'
+				}, false),
+				font: '18px sans-serif',
+				fillColor: Cesium.Color.GOLD,
+				style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+				outlineWidth: 2,
+				verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+				pixelOffset: new Cesium.Cartesian2(20, -20),
+			}
+		});
+		this.label=labelModel;
+	}
 	destroy() {
 		if (this.handler) {
 			this.handler.destroy();
@@ -277,6 +313,10 @@ class CreatePolygon extends BasePlot {
 		if (this.polyline) {
 			this.viewer.entities.remove(this.polyline);
 			this.polyline = null;
+		}
+		if(this.label){
+			this.viewer.entities.remove(this.label);
+			this.label = null;
 		}
 		this.positions = [];
 		this.style = null;
