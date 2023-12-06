@@ -10,10 +10,11 @@ import util from "../util";
  * @alias BasePlot.CreatePoint
  */
 class CreatePoint extends BasePlot {
-	constructor(viewer, style) {
+	constructor(viewer, style,zIndex) {
 		super(viewer, style);
 		this.type = "point";
 		this.viewer = viewer;
+		this.zIndex=zIndex||1;
 		let defaultStyle = {
 			color: Cesium.Color.AQUA,
 			pixelSize: 10,
@@ -195,7 +196,10 @@ class CreatePoint extends BasePlot {
 				outlineColor: this.style.outlineColor instanceof Cesium.Color ? this.style.outlineColor : (this.style.outlineColor ? Cesium.Color.fromCssColorString(this.style.outlineColor).withAlpha(this.style.outlineColorAlpha || 1) : Cesium.Color.BLACK),
 				outlineWidth: this.style.outlineWidth || 4,
 				pixelSize: this.style.pixelSize || 20,
-				disableDepthTestDistance: Number.MAX_VALUE
+				disableDepthTestDistance: Number.MAX_VALUE,
+				zIndex:new Cesium.CallbackProperty(function () {
+					return this.zIndex;
+				}, false),
 			}
 		})
 		point.objId = this.objId;

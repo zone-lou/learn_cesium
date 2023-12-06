@@ -4,9 +4,10 @@
     <el-button v-for="(item, index) in plotList" :key="index" class="toolbar-btn" type="primary" @click="start(item)">{{
         item.name }}</el-button>
     <el-button class="toolbar-btn" type="primary" danger @click="clear">清除</el-button>
-    <el-table :data="entityObjArr" style="width: 100%">
+    <el-table :data="entityObjArr" style="width: 100%" row-key="name">
       <el-table-column prop="name" label="名称"  width="180" />
       <el-table-column prop="type" label="类型"  width="180" />
+      <el-table-column prop="zIndex" label="层级"  width="80" />
       <el-table-column prop="distance" label="长度" width="200" >
       </el-table-column>
       <el-table-column prop="area" label="面积" width="200" >
@@ -43,6 +44,7 @@ import * as Cesium from "cesium";
 import markerimg from "../../assets/start.png"
 import Tool from "../../utils/js/drawTool.js"
 import util from "../../utils/util";
+import { enableRowDrop } from '../../utils/sorttable'
 let viewer = undefined;
 const state = reactive({
   plotList: [{
@@ -73,6 +75,34 @@ const state = reactive({
         "color": "#00FFFF",
         "colorAlpha": 0.3,
         "outline": true,
+        "outlineColor": "#ffffff",
+        "heightReference": 0
+      }
+    },
+    {
+      "name": "面",
+      "type": "polygon",
+      "iconImg": "./easy3d/images/plot/polygon.png",
+      "styleType": "polygon",
+      "children": [],
+      "style": {
+        "color": "#000000",
+        "colorAlpha": 1,
+        "outline": false,
+        "outlineColor": "#ffffff",
+        "heightReference": 0
+      }
+    },
+    {
+      "name": "面bai",
+      "type": "polygon",
+      "iconImg": "./easy3d/images/plot/polygon.png",
+      "styleType": "polygon",
+      "children": [],
+      "style": {
+        "color": "#ffffff",
+        "colorAlpha": 1,
+        "outline": false,
         "outlineColor": "#ffffff",
         "heightReference": 0
       }
@@ -134,6 +164,7 @@ onMounted(() => {
   viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
       Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK
   );
+  // viewer.scene.globe.depthTestAgainstTerrain = true;
   util.setCameraView({
     "x": 116.30737298856594,
     "y": 31.157848537028933,
@@ -151,11 +182,12 @@ onMounted(() => {
   plotDrawTool.on("endCreate", endCreate)
   plotDrawTool.on("remove",remove)
   plotDrawTool.on('editing',editing)
+  enableRowDrop(getList, true)
 
 });
 const endCreate=(entObj:any,ent:any)=>{
   console.log(entObj,'2222')
-  entityObjArr.push({
+  entityObjArr.unshift({
     id:entObj.attr.id,
     name:entObj.name,
     type:entObj.type,
@@ -163,7 +195,8 @@ const endCreate=(entObj:any,ent:any)=>{
     height:0,
     extrudedHeight:0,
     area:entObj.area,
-    distance:entObj.distances.reduce((total:any, num:any) => total + num, 0)
+    distance:entObj.distances.reduce((total:any, num:any) => total + num, 0),
+    zIndex:entObj.zIndex,
   })
 }
 const remove=(entObj:any,ent:any)=>{
@@ -220,6 +253,16 @@ const sliderHeightChange=(item:any)=>{
   if(item.type=='polygon'){
     obj.entityObj.entity.polygon.height=item.height;
     obj.entityObj.entity.polygon.extrudedHeight=item.height+item.extrudedHeight;
+  //     obj.entityObj.controlPoints.forEach((point:any)=>{
+  //   var lnglat = Cesium.Cartographic.fromCartesian(point.position._value);
+  //   var lat = Cesium.Math.toDegrees(lnglat.latitude);
+  //   var lng = Cesium.Math.toDegrees(lnglat.longitude);
+  //   var hei = lnglat.height+item.height;
+  //   console.log(lat,lng,hei ,'点属性')
+  //   let cartesian3=  Cesium.Cartesian3.fromDegrees(lng,lat,hei)
+  //   point.position=cartesian3
+  //
+  // })
   }
   if(item.type=='polyline'){
     if(item.extrudedHeight>0){
@@ -228,6 +271,7 @@ const sliderHeightChange=(item:any)=>{
       //判断有没有墙
       if(obj.entityObj.wall){
         obj.entityObj.modelHeight=item.extrudedHeight;
+        obj.entityObj.wall.wall.show=true;
       }
       else{
         //创建墙
@@ -238,9 +282,24 @@ const sliderHeightChange=(item:any)=>{
       //显示线
       obj.entityObj.entity.polyline.show=true;
       //隐藏墙
-      obj.entityObj.wall.wall.show=true;
+      obj.entityObj.wall.wall.show=false;
     }
   }
+}
+// 获取--列表页数据
+const getList = (evt: any) => {
+  console.log(entityObjArr,'数据改变前')
+  const {newIndex,oldIndex}=evt;
+  const movedElement=entityObjArr.splice(oldIndex,1)[0];
+  entityObjArr.splice(newIndex,0,movedElement)
+  console.log(evt, 'evt')
+  console.log(entityObjArr,'数据改变后')
+  entityObjArr.forEach((entity,index)=>{
+    entity.zIndex=entityObjArr.length-index
+    let obj=plotDrawTool.getEntityObjById(entity.id)
+    console.log(obj,'0000000')
+    obj.entityObj.zIndex=entityObjArr.length-index
+  })
 }
 </script>
 
@@ -260,5 +319,14 @@ const sliderHeightChange=(item:any)=>{
 
 .toolbar-btn {
   margin: 10px;
+}
+.drop-dragClass {
+  background: blue !important;
+}
+.drop-ghostClass {
+  background: #6cacf5 !important;
+}
+.drop-chosenClass:hover > td {
+  background: blue !important;
 }
 </style>

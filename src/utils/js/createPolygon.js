@@ -10,12 +10,13 @@ import util from '../util';
  * @alias BasePlot.CreatePolygon
  */
 class CreatePolygon extends BasePlot {
-	constructor(viewer, style) {
+	constructor(viewer, style,zIndex) {
 		super(viewer, style);
 		this.type = "polygon";
 		this.viewer = viewer;
 		this.entity = null;
 		this.polyline = null;
+		this.zIndex=zIndex||1;
 		this.label=null;
 		let defaultStyle = {
 			outlineColor: "#000000",
@@ -248,17 +249,19 @@ class CreatePolygon extends BasePlot {
 				hierarchy: new Cesium.CallbackProperty(function () {
 					return new Cesium.PolygonHierarchy(that.positions)
 				}, false),
-				// heightReference: Number(this.style.heightReference),
+				heightReference: Number(this.style.heightReference),
 				show: true,
 				fill: this.style.fill == undefined ? true : this.style.fill,
+				zIndex:new Cesium.CallbackProperty(function () {
+					return that.zIndex;
+				}, false),
 				material: this.style.color instanceof Cesium.Color ? this.style.color : Cesium.Color.fromCssColorString(this.style.color).withAlpha(this.style.colorAlpha || 1)
 			}
 		}
 
 		if (!this.style.heightReference) {
-			polygonObj.polygon.height = 0; // 不贴地 必设
-			// polygonObj.polygon.heightReference =HeightReference.NONE
-			polygonObj.polygon.perPositionHeight = false; // 启用点的真实高度
+			// polygonObj.polygon.height = 0; // 不贴地 必设
+			// polygonObj.polygon.perPositionHeight = false; // 启用点的真实高度
 		}
 		return this.viewer.entities.add(polygonObj);
 	}
@@ -272,7 +275,10 @@ class CreatePolygon extends BasePlot {
 				}, false),
 				clampToGround: Boolean(this.style.heightReference),
 				material: this.style.outlineColor instanceof Cesium.Color ? this.style.outlineColor : Cesium.Color.fromCssColorString(this.style.outlineColor).withAlpha(this.style.outlineColorAlpha || 1),
-				width: this.style.outlineWidth || 1
+				width: this.style.outlineWidth || 1,
+				zIndex:new Cesium.CallbackProperty(function () {
+					return that.zIndex;
+				}, false),
 			}
 		});
 	}

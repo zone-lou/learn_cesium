@@ -11,12 +11,13 @@ import Prompt from '../js/prompt/prompt.js'
  * @alias BasePlot.CreatePolyline
  */
 class CreatePolyline extends BasePlot {
-    constructor(viewer, style) {
+    constructor(viewer, style,zIndex) {
         super(viewer, style);
         style = style || {};
         this.movePush = false;
         this.type = "polyline";
         this.wall=undefined;
+        this.zIndex=zIndex||1;
         this.labels=[];
         /**
          * @property {Number} [maxPointNum=Number.MAX_VALUE] 线的最大点位数量
@@ -213,10 +214,14 @@ class CreatePolyline extends BasePlot {
                 show: true,
                 material: this.getMaterial(this.style.animateType, this.style),
                 width: this.style.width || 3,
-                clampToGround: this.style.clampToGround
+                clampToGround: this.style.clampToGround,
+                zIndex:new Cesium.CallbackProperty(function () {
+                    return that.zIndex;
+                }, false),
             }
         });
         polyline.objId = this.objId; // 此处进行和entityObj进行关联
+        console.log(polyline,'线')
         return polyline;
     }
     createWall(height) {

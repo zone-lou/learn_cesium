@@ -57,6 +57,11 @@ class BasePlot {
         this.centerPoint=null;
 
         /**
+         *@property {int} z-index 层级
+         */
+        this.zIndex=1;
+
+        /**
          *@property {String} state 标识当前状态 no startCreate creating endCreate startEdit endEdit editing
          */
         this.state = null;  //
@@ -211,12 +216,13 @@ class BasePlot {
         this.modelHeight=0;
         this.distances=[];
         this.area=0;
-        this.controlPoints=null;
-        this.style = null;
         for (var i = 0; i < this.controlPoints.length; i++) {
             var point = this.controlPoints[i];
             this.viewer.entities.remove(point);
         }
+        this.controlPoints=null;
+        this.style = null;
+
         this.controlPoints = [];
         this.modifyPoint = null;
         if (this.prompt) {
